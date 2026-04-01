@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as userService from '../services/users.service';
+import { Upload } from '../../uploads/models/upload.model';
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -44,6 +45,28 @@ export const remove = async (req: Request, res: Response, next: NextFunction) =>
     const user = await userService.deleteUser(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const uploadProfileImage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const file = (req as any).file;
+    if (!file) return res.status(400).json({ message: 'File is required' });
+
+    const upload = await Upload.create({
+      originalName: file.originalname,
+      fileName: file.filename,
+      mimeType: file.mimetype,
+      size: file.size,
+      path: file.path,
+      url: `/uploads/${file.filename}`,
+    });
+
+    const user = await userService.setProfileImage(req.params.id, upload.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ user, upload });
   } catch (err) {
     next(err);
   }

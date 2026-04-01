@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
 import { requestLogger } from './middleware/logging.middleware';
 import { errorHandler } from './middleware/error.middleware';
 import { swaggerDocument } from './shared/swagger';
@@ -14,13 +15,17 @@ import procurementRoutes from './modules/procurement/routes/procurement.routes';
 import orderRoutes from './modules/orders/routes/orders.routes';
 import salesRoutes from './modules/sales/routes/sales.routes';
 import tenderRoutes from './modules/tender/routes/tender.routes';
+import analyticsRoutes from './modules/analytics/routes/analytics.routes';
 import hrRoutes from './modules/hr/routes/hr.routes';
+import notificationRoutes from './modules/notifications/routes/notifications.routes';
+import attendanceRoutes from './modules/hr/routes/attendance.routes';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
+app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
@@ -34,7 +39,10 @@ app.use('/api/v1/procurement', procurementRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/sales', salesRoutes);
 app.use('/api/v1/tenders', tenderRoutes);
+app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/hr', hrRoutes);
+app.use('/api/v1/attendance', attendanceRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

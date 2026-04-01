@@ -3,6 +3,7 @@ import { validate } from '../../../middleware/validate.middleware';
 import * as inventoryController from '../controllers/inventory.controller';
 import { createProductSchema, updateProductSchema, getProductSchema, listProductsSchema, updateInventorySchema } from '../validators/inventory.validator';
 import { authenticate } from '../../../middleware/auth.middleware';
+import { uploadSingle } from '../../../middleware/upload.middleware';
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.post('/products', authenticate, validate(createProductSchema), inventoryC
 router.put('/products/:id', authenticate, validate(updateProductSchema), inventoryController.updateProduct);
 router.delete('/products/:id', authenticate, validate(getProductSchema), inventoryController.removeProduct);
 router.put('/inventory/:productId', authenticate, validate(updateInventorySchema), inventoryController.updateInventory);
+router.post('/products/:id/image', authenticate, uploadSingle, inventoryController.uploadProductImage);
 
 export default router;

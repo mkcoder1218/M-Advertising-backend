@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 export const createProductSchema = Joi.object({
   body: Joi.object({
-    sku: Joi.string().max(100).required(),
+    sku: Joi.string().max(100).optional(),
     name: Joi.string().max(255).required(),
     type: Joi.string().valid('raw', 'finished').required(),
     unit: Joi.string().max(50).required(),
@@ -32,7 +32,12 @@ export const getProductSchema = Joi.object({
 });
 
 export const listProductsSchema = Joi.object({
-  query: Joi.object({ type: Joi.string().valid('raw', 'finished').optional() }).optional(),
+  query: Joi.object({
+    type: Joi.string().valid('raw', 'finished').optional(),
+    page: Joi.number().integer().min(1).optional(),
+    limit: Joi.number().integer().min(1).max(100).optional(),
+    search: Joi.string().max(100).optional(),
+  }).optional(),
   params: Joi.object().optional(),
   body: Joi.object().optional(),
 });

@@ -8,9 +8,10 @@ export interface ProductAttributes {
   unit: string;
   description?: string | null;
   isActive: boolean;
+  imageId?: string | null;
 }
 
-export type ProductCreationAttributes = Optional<ProductAttributes, 'id' | 'description' | 'isActive'>;
+export type ProductCreationAttributes = Optional<ProductAttributes, 'id' | 'description' | 'isActive' | 'imageId'>;
 
 export class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
   declare id: string;
@@ -20,6 +21,7 @@ export class Product extends Model<ProductAttributes, ProductCreationAttributes>
   declare unit: string;
   declare description?: string | null;
   declare isActive: boolean;
+  declare imageId?: string | null;
 }
 
 export const initProductModel = (sequelize: Sequelize) => {
@@ -32,6 +34,7 @@ export const initProductModel = (sequelize: Sequelize) => {
       unit: { type: DataTypes.STRING(50), allowNull: false },
       description: { type: DataTypes.TEXT, allowNull: true },
       isActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true, field: 'is_active' },
+      imageId: { type: DataTypes.UUID, allowNull: true, field: 'image_id' },
     },
     { sequelize, tableName: 'products' }
   );
@@ -45,4 +48,5 @@ export const associateProductModel = (models: any) => {
   Product.hasMany(models.PurchaseOrderItem, { foreignKey: 'product_id' });
   Product.hasMany(models.OrderItem, { foreignKey: 'product_id' });
   Product.hasMany(models.SaleItem, { foreignKey: 'product_id' });
+  Product.belongsTo(models.Upload, { foreignKey: 'image_id' });
 };

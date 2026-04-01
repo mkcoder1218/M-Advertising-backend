@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 export const createSaleSchema = Joi.object({
   body: Joi.object({
-    saleNumber: Joi.string().max(100).required(),
+    saleNumber: Joi.string().max(100).optional(),
     orderId: Joi.string().uuid().optional(),
     saleDate: Joi.date().required(),
     status: Joi.string().max(50).required(),

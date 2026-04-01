@@ -1,11 +1,12 @@
 import { User } from '../../users/models/user.model';
+import { Role } from '../../roles/models/role.model';
 import { RefreshToken } from '../models/refreshToken.model';
 import { comparePassword } from '../../../utils/password.util';
 import { signToken, verifyToken, expiresAtFrom } from '../../../utils/token.util';
 import { jwtConfig } from '../../../config/jwt';
 
 export const login = async (email: string, password: string) => {
-  const user = await User.findOne({ where: { email } });
+  const user = await User.findOne({ where: { email }, include: [Role] });
   if (!user) return null;
 
   const ok = await comparePassword(password, user.passwordHash);

@@ -10,9 +10,9 @@ export const createSupplier = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-export const listSuppliers = async (_req: Request, res: Response, next: NextFunction) => {
+export const listSuppliers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const suppliers = await procurementService.listSuppliers();
+    const suppliers = await procurementService.listSuppliers(req.query);
     res.json(suppliers);
   } catch (err) {
     next(err);
@@ -28,9 +28,9 @@ export const createPurchaseOrder = async (req: Request, res: Response, next: Nex
   }
 };
 
-export const listPurchaseOrders = async (_req: Request, res: Response, next: NextFunction) => {
+export const listPurchaseOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const orders = await procurementService.listPurchaseOrders();
+    const orders = await procurementService.listPurchaseOrders(req.query);
     res.json(orders);
   } catch (err) {
     next(err);

@@ -10,10 +10,20 @@ export const createTender = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-export const listTenders = async (_req: Request, res: Response, next: NextFunction) => {
+export const listTenders = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const tenders = await tenderService.listTenders();
+    const tenders = await tenderService.listTenders(req.query);
     res.json(tenders);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateTender = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const tender = await tenderService.updateTender(req.params.id, req.body);
+    if (!tender) return res.status(404).json({ message: 'Tender not found' });
+    res.json(tender);
   } catch (err) {
     next(err);
   }

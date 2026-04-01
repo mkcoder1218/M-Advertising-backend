@@ -13,3 +13,13 @@ export const createEmployeeSchema = Joi.object({
   params: Joi.object().optional(),
   query: Joi.object().optional(),
 });
+
+export const listEmployeesSchema = Joi.object({
+  query: Joi.object({
+    page: Joi.number().integer().min(1).optional(),
+    limit: Joi.number().integer().min(1).max(100).optional(),
+    search: Joi.string().max(100).optional(),
+  }).optional(),
+  params: Joi.object().optional(),
+  body: Joi.object().optional(),
+});

@@ -6,9 +6,10 @@ export interface OrderItemAttributes {
   productId: string;
   quantity: number;
   unitPrice: number;
+  workTypeId?: string | null;
 }
 
-export type OrderItemCreationAttributes = Optional<OrderItemAttributes, 'id'>;
+export type OrderItemCreationAttributes = Optional<OrderItemAttributes, 'id' | 'workTypeId'>;
 
 export class OrderItem extends Model<OrderItemAttributes, OrderItemCreationAttributes> implements OrderItemAttributes {
   declare id: string;
@@ -16,6 +17,7 @@ export class OrderItem extends Model<OrderItemAttributes, OrderItemCreationAttri
   declare productId: string;
   declare quantity: number;
   declare unitPrice: number;
+  declare workTypeId?: string | null;
 }
 
 export const initOrderItemModel = (sequelize: Sequelize) => {
@@ -26,6 +28,7 @@ export const initOrderItemModel = (sequelize: Sequelize) => {
       productId: { type: DataTypes.UUID, allowNull: false, field: 'product_id' },
       quantity: { type: DataTypes.DECIMAL(12, 2), allowNull: false },
       unitPrice: { type: DataTypes.DECIMAL(12, 2), allowNull: false, field: 'unit_price' },
+      workTypeId: { type: DataTypes.UUID, allowNull: true, field: 'work_type_id' },
     },
     { sequelize, tableName: 'order_items' }
   );
@@ -36,4 +39,5 @@ export const initOrderItemModel = (sequelize: Sequelize) => {
 export const associateOrderItemModel = (models: any) => {
   OrderItem.belongsTo(models.Order, { foreignKey: 'order_id' });
   OrderItem.belongsTo(models.Product, { foreignKey: 'product_id' });
+  OrderItem.belongsTo(models.WorkType, { foreignKey: 'work_type_id' });
 };

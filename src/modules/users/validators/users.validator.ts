@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 export const createUserSchema = Joi.object({
   body: Joi.object({
-    email: Joi.string().email().required(),
+    email: Joi.string().email({ tlds: { allow: false } }).required(),
     password: Joi.string().min(6).required(),
     fullName: Joi.string().max(255).required(),
     phone: Joi.string().max(50).optional(),
@@ -13,7 +13,7 @@ export const createUserSchema = Joi.object({
 
 export const updateUserSchema = Joi.object({
   body: Joi.object({
-    email: Joi.string().email().optional(),
+    email: Joi.string().email({ tlds: { allow: false } }).optional(),
     password: Joi.string().min(6).optional(),
     fullName: Joi.string().max(255).optional(),
     phone: Joi.string().max(50).optional(),

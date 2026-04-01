@@ -5,8 +5,10 @@ import { initPermissionModel, associatePermissionModel } from '../modules/roles/
 import { initUserRoleModel } from '../modules/roles/models/userRole.model';
 import { initRolePermissionModel } from '../modules/roles/models/rolePermission.model';
 import { initEmployeeModel, associateEmployeeModel } from '../modules/hr/models/employee.model';
+import { initAttendanceModel, associateAttendanceModel } from '../modules/hr/models/attendance.model';
 import { initTeamModel, associateTeamModel } from '../modules/teams/models/team.model';
 import { initTeamMemberModel, associateTeamMemberModel } from '../modules/teams/models/teamMember.model';
+import { initWorkTypeModel, associateWorkTypeModel } from '../modules/teams/models/workType.model';
 import { initProductModel, associateProductModel } from '../modules/inventory/models/product.model';
 import { initInventoryModel, associateInventoryModel } from '../modules/inventory/models/inventory.model';
 import { initProductionJobModel, associateProductionJobModel } from '../modules/production/models/productionJob.model';
@@ -16,10 +18,13 @@ import { initPurchaseOrderModel, associatePurchaseOrderModel } from '../modules/
 import { initPurchaseOrderItemModel, associatePurchaseOrderItemModel } from '../modules/procurement/models/purchaseOrderItem.model';
 import { initOrderModel, associateOrderModel } from '../modules/orders/models/order.model';
 import { initOrderItemModel, associateOrderItemModel } from '../modules/orders/models/orderItem.model';
+import { initOrderMessageModel, associateOrderMessageModel } from '../modules/orders/models/orderMessage.model';
+import { initNotificationModel, associateNotificationModel } from '../modules/notifications/models/notification.model';
 import { initSaleModel, associateSaleModel } from '../modules/sales/models/sale.model';
 import { initSaleItemModel, associateSaleItemModel } from '../modules/sales/models/saleItem.model';
 import { initTenderModel, associateTenderModel } from '../modules/tender/models/tender.model';
 import { initRefreshTokenModel, associateRefreshTokenModel } from '../modules/auth/models/refreshToken.model';
+import { initUploadModel, associateUploadModel } from '../modules/uploads/models/upload.model';
 
 export const initDatabase = () => {
   const models = {
@@ -29,8 +34,10 @@ export const initDatabase = () => {
     UserRole: initUserRoleModel(sequelize),
     RolePermission: initRolePermissionModel(sequelize),
     Employee: initEmployeeModel(sequelize),
+    Attendance: initAttendanceModel(sequelize),
     Team: initTeamModel(sequelize),
     TeamMember: initTeamMemberModel(sequelize),
+    WorkType: initWorkTypeModel(sequelize),
     Product: initProductModel(sequelize),
     Inventory: initInventoryModel(sequelize),
     ProductionJob: initProductionJobModel(sequelize),
@@ -40,18 +47,23 @@ export const initDatabase = () => {
     PurchaseOrderItem: initPurchaseOrderItemModel(sequelize),
     Order: initOrderModel(sequelize),
     OrderItem: initOrderItemModel(sequelize),
+    OrderMessage: initOrderMessageModel(sequelize),
+    Notification: initNotificationModel(sequelize),
     Sale: initSaleModel(sequelize),
     SaleItem: initSaleItemModel(sequelize),
     Tender: initTenderModel(sequelize),
     RefreshToken: initRefreshTokenModel(sequelize),
+    Upload: initUploadModel(sequelize),
   };
 
   associateUserModel(models);
   associateRoleModel(models);
   associatePermissionModel(models);
   associateEmployeeModel(models);
+  associateAttendanceModel(models);
   associateTeamModel(models);
   associateTeamMemberModel(models);
+  associateWorkTypeModel(models);
   associateProductModel(models);
   associateInventoryModel(models);
   associateProductionJobModel(models);
@@ -61,10 +73,13 @@ export const initDatabase = () => {
   associatePurchaseOrderItemModel(models);
   associateOrderModel(models);
   associateOrderItemModel(models);
+  associateOrderMessageModel(models);
+  associateNotificationModel(models);
   associateSaleModel(models);
   associateSaleItemModel(models);
   associateTenderModel(models);
   associateRefreshTokenModel(models);
+  associateUploadModel(models);
 
   return { sequelize, models };
 };

@@ -36,3 +36,9 @@ export const deleteUser = async (id: string) => {
   await user.destroy();
   return user;
 };
+
+export const setProfileImage = async (id: string, uploadId: string) => {
+  const user = await User.findByPk(id);
+  if (!user) return null;
+  return user.update({ profileImageId: uploadId });
+};

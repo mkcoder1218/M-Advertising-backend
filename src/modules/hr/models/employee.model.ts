@@ -48,4 +48,5 @@ export const initEmployeeModel = (sequelize: Sequelize) => {
 export const associateEmployeeModel = (models: any) => {
   Employee.belongsTo(models.User, { foreignKey: 'user_id' });
   Employee.hasMany(models.TeamMember, { foreignKey: 'employee_id' });
+  Employee.hasMany(models.Attendance, { foreignKey: 'employee_id' });
 };
