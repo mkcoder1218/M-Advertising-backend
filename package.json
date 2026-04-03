@@ -5,9 +5,9 @@
   "type": "commonjs",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "npm run seed && ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/database/seeders/seed.js && node dist/server.js",
     "seed": "ts-node-dev --transpile-only src/database/seeders/seed.ts"
   },
   "dependencies": {
