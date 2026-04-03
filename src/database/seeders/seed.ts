@@ -5,6 +5,7 @@ import { hashPassword } from '../../utils/password.util';
 const seed = async () => {
   const { sequelize, models } = initDatabase();
   await sequelize.authenticate();
+  await sequelize.sync({ alter: true });
 
   const roles = [
     { name: 'SUPER_ADMIN', description: 'Unlimited system access.' },
