@@ -151,10 +151,10 @@ const seed = async () => {
 
   // Products seed
   const products = [
-    { sku: 'RAW-STEEL-001', name: 'Steel Sheet', type: 'raw', unit: 'kg', description: 'Mild steel sheets' },
-    { sku: 'RAW-AL-002', name: 'Aluminum Rod', type: 'raw', unit: 'pcs', description: '6061 aluminum rods' },
-    { sku: 'FIN-CHAIR-001', name: 'Metal Chair', type: 'finished', unit: 'pcs', description: 'Finished metal chair' },
-    { sku: 'FIN-TABLE-002', name: 'Workshop Table', type: 'finished', unit: 'pcs', description: 'Heavy duty table' },
+    { sku: 'RAW-STEEL-001', name: 'Steel Sheet', type: 'raw', unit: 'kg', description: 'Mild steel sheets', sellingPrice: 8.5 },
+    { sku: 'RAW-AL-002', name: 'Aluminum Rod', type: 'raw', unit: 'pcs', description: '6061 aluminum rods', sellingPrice: 12.0 },
+    { sku: 'FIN-CHAIR-001', name: 'Metal Chair', type: 'finished', unit: 'pcs', description: 'Finished metal chair', sellingPrice: 60.0 },
+    { sku: 'FIN-TABLE-002', name: 'Workshop Table', type: 'finished', unit: 'pcs', description: 'Heavy duty table', sellingPrice: 150.0 },
   ];
 
   const productRows: Record<string, any> = {};
@@ -164,6 +164,24 @@ const seed = async () => {
       defaults: p,
     });
     productRows[p.sku] = row;
+  }
+
+  // Inventory seed
+  const inventorySeed = [
+    { sku: 'RAW-STEEL-001', quantity: 120, location: 'Main Store' },
+    { sku: 'RAW-AL-002', quantity: 80, location: 'Main Store' },
+    { sku: 'FIN-CHAIR-001', quantity: 25, location: 'Finished Goods' },
+    { sku: 'FIN-TABLE-002', quantity: 10, location: 'Finished Goods' },
+  ];
+  for (const inv of inventorySeed) {
+    await models.Inventory.findOrCreate({
+      where: { productId: productRows[inv.sku].id, location: inv.location },
+      defaults: {
+        productId: productRows[inv.sku].id,
+        location: inv.location,
+        quantity: inv.quantity,
+      },
+    });
   }
 
   // Orders + order items seed

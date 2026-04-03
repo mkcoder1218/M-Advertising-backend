@@ -3,6 +3,7 @@ import { OrderItem } from '../models/orderItem.model';
 import { OrderMessage } from '../models/orderMessage.model';
 import { WorkType } from '../../teams/models/workType.model';
 import { Product } from '../../inventory/models/product.model';
+import { Inventory } from '../../inventory/models/inventory.model';
 import { getPagination } from '../../../utils/pagination.util';
 import { Op } from 'sequelize';
 
@@ -51,7 +52,29 @@ export const listOrderItems = async (orderId: string) => OrderItem.findAll({ whe
 export const updateOrder = async (id: string, data: any) => {
   const order = await Order.findByPk(id);
   if (!order) return null;
-  return order.update(data);
+  const prevStatus = order.approvalStatus;
+  const nextStatus = data.approvalStatus || prevStatus;
+  const updated = await order.update(data);
+
+  if (prevStatus !== 'WORK_IN_PROGRESS' && prevStatus !== 'WORK_COMPLETED' && nextStatus === 'WORK_IN_PROGRESS') {
+    const items = await OrderItem.findAll({ where: { orderId: order.id } });
+    for (const it of items as any[]) {
+      const qty = Number(it.quantity || 0);
+      if (qty <= 0) continue;
+      const inv = await Inventory.findOne({
+        where: { productId: it.productId },
+        order: [['created_at', 'ASC']],
+      });
+      if (inv) {
+        const current = Number(inv.quantity || 0);
+        await inv.update({ quantity: current - qty });
+      } else {
+        await Inventory.create({ productId: it.productId, quantity: 0 - qty, location: 'Production' });
+      }
+    }
+  }
+
+  return updated;
 };
 
 export const addMessage = async (orderId: string, data: any) => {

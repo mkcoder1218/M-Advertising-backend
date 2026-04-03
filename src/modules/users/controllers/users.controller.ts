@@ -71,3 +71,13 @@ export const uploadProfileImage = async (req: Request, res: Response, next: Next
     next(err);
   }
 };
+
+export const updateAttendanceLocation = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await userService.setAttendanceLocation(req.params.id, req.body);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+};

@@ -25,6 +25,7 @@ import { initSaleItemModel, associateSaleItemModel } from '../modules/sales/mode
 import { initTenderModel, associateTenderModel } from '../modules/tender/models/tender.model';
 import { initRefreshTokenModel, associateRefreshTokenModel } from '../modules/auth/models/refreshToken.model';
 import { initUploadModel, associateUploadModel } from '../modules/uploads/models/upload.model';
+import { initStockRequestModel, associateStockRequestModel } from '../modules/requests/models/stockRequest.model';
 
 export const initDatabase = () => {
   const models = {
@@ -54,6 +55,7 @@ export const initDatabase = () => {
     Tender: initTenderModel(sequelize),
     RefreshToken: initRefreshTokenModel(sequelize),
     Upload: initUploadModel(sequelize),
+    StockRequest: initStockRequestModel(sequelize),
   };
 
   associateUserModel(models);
@@ -80,6 +82,7 @@ export const initDatabase = () => {
   associateTenderModel(models);
   associateRefreshTokenModel(models);
   associateUploadModel(models);
+  associateStockRequestModel(models);
 
   return { sequelize, models };
 };

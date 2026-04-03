@@ -1,4 +1,6 @@
 import { User } from '../models/user.model';
+import { Role } from '../../roles/models/role.model';
+import { Op } from 'sequelize';
 import { hashPassword } from '../../../utils/password.util';
 
 export const createUser = async (data: any) => {
@@ -15,7 +17,23 @@ export const getUserById = async (id: string) => {
 export const listUsers = async (filters: any) => {
   const where: any = {};
   if (filters.isActive !== undefined) where.isActive = filters.isActive;
-  return User.findAll({ where });
+  if (filters.search) {
+    where[Op.or] = [
+      { fullName: { [Op.iLike]: `%${filters.search}%` } },
+      { email: { [Op.iLike]: `%${filters.search}%` } },
+    ];
+  }
+  const page = filters.page ? Number(filters.page) : 1;
+  const limit = filters.limit ? Number(filters.limit) : 20;
+  const offset = (page - 1) * limit;
+  const { count, rows } = await User.findAndCountAll({
+    where,
+    include: [Role],
+    order: [['created_at', 'DESC']],
+    limit,
+    offset,
+  });
+  return { total: count, items: rows, page, limit };
 };
 
 export const updateUser = async (id: string, data: any) => {
@@ -41,4 +59,14 @@ export const setProfileImage = async (id: string, uploadId: string) => {
   const user = await User.findByPk(id);
   if (!user) return null;
   return user.update({ profileImageId: uploadId });
+};
+
+export const setAttendanceLocation = async (id: string, data: { attendanceLat: number; attendanceLng: number; attendanceRadiusM?: number }) => {
+  const user = await User.findByPk(id);
+  if (!user) return null;
+  return user.update({
+    attendanceLat: data.attendanceLat,
+    attendanceLng: data.attendanceLng,
+    attendanceRadiusM: data.attendanceRadiusM ?? user.attendanceRadiusM ?? 50,
+  });
 };

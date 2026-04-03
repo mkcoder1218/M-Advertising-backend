@@ -7,16 +7,16 @@ import { WorkType } from '../models/workType.model';
 
 const router = Router();
 
+router.get('/work-types', authenticate, async (_req, res) => {
+  const types = await WorkType.findAll({ order: [['name', 'ASC']] });
+  res.json(types);
+});
+
 router.get('/', authenticate, teamsController.list);
 router.get('/:id', authenticate, teamsController.getById);
 router.post('/', authenticate, validate(createTeamSchema), teamsController.create);
 router.put('/:id', authenticate, validate(updateTeamSchema), teamsController.update);
 router.delete('/:id', authenticate, teamsController.remove);
-
-router.get('/work-types', authenticate, async (_req, res) => {
-  const types = await WorkType.findAll({ order: [['name', 'ASC']] });
-  res.json(types);
-});
 
 router.get('/:teamId/members', authenticate, teamsController.listMembers);
 router.post('/members', authenticate, validate(createTeamMemberSchema), teamsController.addMember);

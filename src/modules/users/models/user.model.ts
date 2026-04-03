@@ -10,9 +10,15 @@ export interface UserAttributes {
   lastLoginAt?: Date | null;
   profileImageId?: string | null;
   workTypeId?: string | null;
+  attendanceLat?: number | null;
+  attendanceLng?: number | null;
+  attendanceRadiusM?: number | null;
 }
 
-export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'phone' | 'isActive' | 'lastLoginAt' | 'profileImageId' | 'workTypeId'>;
+export type UserCreationAttributes = Optional<
+  UserAttributes,
+  'id' | 'phone' | 'isActive' | 'lastLoginAt' | 'profileImageId' | 'workTypeId' | 'attendanceLat' | 'attendanceLng' | 'attendanceRadiusM'
+>;
 
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   declare id: string;
@@ -24,6 +30,9 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   declare lastLoginAt?: Date | null;
   declare profileImageId?: string | null;
   declare workTypeId?: string | null;
+  declare attendanceLat?: number | null;
+  declare attendanceLng?: number | null;
+  declare attendanceRadiusM?: number | null;
 }
 
 export const initUserModel = (sequelize: Sequelize) => {
@@ -38,6 +47,9 @@ export const initUserModel = (sequelize: Sequelize) => {
       lastLoginAt: { type: DataTypes.DATE, allowNull: true, field: 'last_login_at' },
       profileImageId: { type: DataTypes.UUID, allowNull: true, field: 'profile_image_id' },
       workTypeId: { type: DataTypes.UUID, allowNull: true, field: 'work_type_id' },
+      attendanceLat: { type: DataTypes.DECIMAL(10, 6), allowNull: true, field: 'attendance_lat' },
+      attendanceLng: { type: DataTypes.DECIMAL(10, 6), allowNull: true, field: 'attendance_lng' },
+      attendanceRadiusM: { type: DataTypes.INTEGER, allowNull: true, defaultValue: 50, field: 'attendance_radius_m' },
     },
     { sequelize, tableName: 'users' }
   );

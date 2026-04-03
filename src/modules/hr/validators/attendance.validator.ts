@@ -29,3 +29,12 @@ export const updateAttendanceSchema = Joi.object({
   params: Joi.object({ id: Joi.string().uuid().required() }).required(),
   query: Joi.object().optional(),
 });
+
+export const markAttendanceSchema = Joi.object({
+  body: Joi.object({
+    lat: Joi.number().required(),
+    lng: Joi.number().required(),
+  }).required(),
+  params: Joi.object().optional(),
+  query: Joi.object().optional(),
+});

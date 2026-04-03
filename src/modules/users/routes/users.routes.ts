@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../../../middleware/validate.middleware';
 import * as userController from '../controllers/users.controller';
-import { createUserSchema, updateUserSchema, getUserSchema, listUsersSchema } from '../validators/users.validator';
+import { createUserSchema, updateUserSchema, getUserSchema, listUsersSchema, updateAttendanceLocationSchema } from '../validators/users.validator';
 import { authenticate } from '../../../middleware/auth.middleware';
 import { uploadSingle } from '../../../middleware/upload.middleware';
 
@@ -11,6 +11,7 @@ router.get('/', authenticate, validate(listUsersSchema), userController.list);
 router.get('/:id', authenticate, validate(getUserSchema), userController.getById);
 router.post('/', validate(createUserSchema), userController.create);
 router.put('/:id', authenticate, validate(updateUserSchema), userController.update);
+router.put('/:id/attendance-location', authenticate, validate(updateAttendanceLocationSchema), userController.updateAttendanceLocation);
 router.delete('/:id', authenticate, validate(getUserSchema), userController.remove);
 router.post('/:id/profile-image', authenticate, uploadSingle, userController.uploadProfileImage);
 

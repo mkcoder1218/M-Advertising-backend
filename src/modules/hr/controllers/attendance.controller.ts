@@ -31,3 +31,26 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
     next(err);
   }
 };
+
+export const me = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as any).user?.id;
+    const record = await attendanceService.getUserAttendance(userId, req.query.date as any);
+    res.json(record);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const mark = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as any).user?.id;
+    const record = await attendanceService.markSelfAttendance(userId, req.body.lat, req.body.lng);
+    res.json(record);
+  } catch (err: any) {
+    if (err?.code === 'OUTSIDE_RADIUS') {
+      return res.status(403).json({ message: 'Outside allowed location', distance: err.distance, radius: err.radius });
+    }
+    next(err);
+  }
+};

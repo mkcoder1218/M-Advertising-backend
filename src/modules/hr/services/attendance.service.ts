@@ -69,6 +69,61 @@ export const listAttendance = async (date?: string, page = 1, limit = 20) => {
   return { total: filtered.length, items: paged, page, limit };
 };
 
+const haversineMeters = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+  const R = 6371000;
+  const toRad = (v: number) => (v * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+export const getUserAttendance = async (userId: string, date?: string) => {
+  const targetDate = getAttendanceDate(date);
+  const employee = await Employee.findOne({ where: { userId } });
+  if (!employee) return null;
+  await ensureDailyAttendance(targetDate);
+  return Attendance.findOne({ where: { employeeId: employee.id, date: targetDate } });
+};
+
+export const markSelfAttendance = async (userId: string, lat: number, lng: number) => {
+  const targetDate = getAttendanceDate();
+  const user = await User.findByPk(userId);
+  if (!user || user.attendanceLat == null || user.attendanceLng == null) {
+    throw new Error('Attendance location not set');
+  }
+  const radius = user.attendanceRadiusM || 50;
+  const distance = haversineMeters(Number(user.attendanceLat), Number(user.attendanceLng), lat, lng);
+  if (distance > radius) {
+    const err: any = new Error('Outside allowed location');
+    err.code = 'OUTSIDE_RADIUS';
+    err.distance = distance;
+    err.radius = radius;
+    throw err;
+  }
+
+  let employee = await Employee.findOne({ where: { userId } });
+  if (!employee) {
+    employee = await Employee.create({
+      userId,
+      firstName: user.fullName?.split(' ')[0] || user.email?.split('@')[0] || 'User',
+      lastName: user.fullName?.split(' ').slice(1).join(' ') || user.fullName || 'Employee',
+      email: user.email,
+      isActive: true,
+    } as any);
+  }
+  const [record] = await Attendance.findOrCreate({
+    where: { employeeId: employee.id, date: targetDate },
+    defaults: { employeeId: employee.id, date: targetDate, status: 'PRESENT', notes: null },
+  });
+  if (record.status !== 'PRESENT') {
+    await record.update({ status: 'PRESENT' });
+  }
+  return record;
+};
+
 export const createAttendance = async (data: any) => {
   return Attendance.create(data);
 };

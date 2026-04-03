@@ -7,11 +7,12 @@ export interface ProductAttributes {
   type: 'raw' | 'finished';
   unit: string;
   description?: string | null;
+  sellingPrice?: number | null;
   isActive: boolean;
   imageId?: string | null;
 }
 
-export type ProductCreationAttributes = Optional<ProductAttributes, 'id' | 'description' | 'isActive' | 'imageId'>;
+export type ProductCreationAttributes = Optional<ProductAttributes, 'id' | 'description' | 'sellingPrice' | 'isActive' | 'imageId'>;
 
 export class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
   declare id: string;
@@ -20,6 +21,7 @@ export class Product extends Model<ProductAttributes, ProductCreationAttributes>
   declare type: 'raw' | 'finished';
   declare unit: string;
   declare description?: string | null;
+  declare sellingPrice?: number | null;
   declare isActive: boolean;
   declare imageId?: string | null;
 }
@@ -33,6 +35,7 @@ export const initProductModel = (sequelize: Sequelize) => {
       type: { type: DataTypes.STRING(20), allowNull: false },
       unit: { type: DataTypes.STRING(50), allowNull: false },
       description: { type: DataTypes.TEXT, allowNull: true },
+      sellingPrice: { type: DataTypes.DECIMAL(12, 2), allowNull: true, field: 'selling_price' },
       isActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true, field: 'is_active' },
       imageId: { type: DataTypes.UUID, allowNull: true, field: 'image_id' },
     },
