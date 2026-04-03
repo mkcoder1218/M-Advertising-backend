@@ -21,7 +21,7 @@ export const listEmployees = async (filters: any) => {
           lastName: (u.fullName || u.email).split(' ').slice(1).join(' ') || (u.fullName || u.email),
           email: u.email,
           position: roles[0]?.name || null,
-          hireDate: new Date().toISOString().slice(0, 10),
+          hireDate: new Date(),
           isActive: true,
         },
       });

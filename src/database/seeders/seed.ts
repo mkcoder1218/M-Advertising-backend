@@ -23,7 +23,7 @@ const seed = async () => {
   for (const role of roles) {
     const [row] = await models.Role.findOrCreate({
       where: { name: role.name },
-      defaults: { description: role.description },
+      defaults: { name: role.name, description: role.description },
     });
     roleRows[role.name] = row;
   }
@@ -55,7 +55,7 @@ const seed = async () => {
   for (const code of permissions) {
     const [perm] = await models.Permission.findOrCreate({
       where: { code },
-      defaults: { description: code },
+      defaults: { code, description: code },
     });
     permissionRows.push(perm);
   }
@@ -87,7 +87,7 @@ const seed = async () => {
   for (const wt of workTypes) {
     const [row] = await models.WorkType.findOrCreate({
       where: { name: wt.name },
-      defaults: { description: wt.description },
+      defaults: { name: wt.name, description: wt.description },
     });
     workTypeRows[wt.name] = row;
   }
@@ -110,13 +110,14 @@ const seed = async () => {
     const [user] = await models.User.findOrCreate({
       where: { email: u.email },
       defaults: {
+        email: u.email,
         fullName: u.name,
         passwordHash,
         isActive: true,
         workTypeId: u.workType ? workTypeRows[u.workType]?.id : null,
       },
     });
-    await user.setRoles([roleRows[u.role]]);
+    await (user as any).setRoles([roleRows[u.role]]);
 
     // Ensure employee record exists for HR view
     await models.Employee.findOrCreate({
@@ -128,7 +129,7 @@ const seed = async () => {
         email: u.email,
         phone: null,
         position: u.role,
-        hireDate: new Date().toISOString().slice(0, 10),
+        hireDate: new Date(),
         isActive: true,
       },
     });
@@ -151,10 +152,10 @@ const seed = async () => {
 
   // Products seed
   const products = [
-    { sku: 'RAW-STEEL-001', name: 'Steel Sheet', type: 'raw', unit: 'kg', description: 'Mild steel sheets', sellingPrice: 8.5 },
-    { sku: 'RAW-AL-002', name: 'Aluminum Rod', type: 'raw', unit: 'pcs', description: '6061 aluminum rods', sellingPrice: 12.0 },
-    { sku: 'FIN-CHAIR-001', name: 'Metal Chair', type: 'finished', unit: 'pcs', description: 'Finished metal chair', sellingPrice: 60.0 },
-    { sku: 'FIN-TABLE-002', name: 'Workshop Table', type: 'finished', unit: 'pcs', description: 'Heavy duty table', sellingPrice: 150.0 },
+    { sku: 'RAW-STEEL-001', name: 'Steel Sheet', type: 'raw' as const, unit: 'kg', description: 'Mild steel sheets', sellingPrice: 8.5 },
+    { sku: 'RAW-AL-002', name: 'Aluminum Rod', type: 'raw' as const, unit: 'pcs', description: '6061 aluminum rods', sellingPrice: 12.0 },
+    { sku: 'FIN-CHAIR-001', name: 'Metal Chair', type: 'finished' as const, unit: 'pcs', description: 'Finished metal chair', sellingPrice: 60.0 },
+    { sku: 'FIN-TABLE-002', name: 'Workshop Table', type: 'finished' as const, unit: 'pcs', description: 'Heavy duty table', sellingPrice: 150.0 },
   ];
 
   const productRows: Record<string, any> = {};
@@ -192,7 +193,7 @@ const seed = async () => {
       customerContact: 'acme@example.com',
       status: 'PENDING',
       approvalStatus: 'AWAITING_RECEPTION',
-      orderDate: new Date().toISOString().slice(0, 10),
+      orderDate: new Date(),
       total: 1200,
       itemsCount: 2,
       items: [
@@ -207,7 +208,7 @@ const seed = async () => {
       status: 'PROCESSING',
       approvalStatus: 'SENT_TO_WORKER',
       assignedWorker: 'Production Team',
-      orderDate: new Date().toISOString().slice(0, 10),
+      orderDate: new Date(),
       total: 500,
       itemsCount: 1,
       items: [
@@ -260,7 +261,7 @@ const seed = async () => {
     defaults: {
       teamId: team.id,
       status: 'IN_PROGRESS',
-      startDate: new Date().toISOString().slice(0, 10),
+      startDate: new Date(),
       notes: 'Seeded production job',
     },
   });
