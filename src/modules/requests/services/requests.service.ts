@@ -52,7 +52,7 @@ export const listStockRequests = async (filters: any) => {
   return { total: count, items: rows, page, limit };
 };
 
-export const updateStockRequest = async (id: string, status: string) => {
+export const updateStockRequest = async (id: string, status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'FULFILLED') => {
   const req = await StockRequest.findByPk(id);
   if (!req) return null;
   const updated = await req.update({ status });

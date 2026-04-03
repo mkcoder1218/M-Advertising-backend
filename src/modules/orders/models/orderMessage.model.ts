@@ -6,6 +6,8 @@ export interface OrderMessageAttributes {
   sender: string;
   role: string;
   text: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type OrderMessageCreationAttributes = Optional<OrderMessageAttributes, 'id'>;
@@ -16,6 +18,8 @@ export class OrderMessage extends Model<OrderMessageAttributes, OrderMessageCrea
   declare sender: string;
   declare role: string;
   declare text: string;
+  declare createdAt?: Date;
+  declare updatedAt?: Date;
 }
 
 export const initOrderMessageModel = (sequelize: Sequelize) => {
