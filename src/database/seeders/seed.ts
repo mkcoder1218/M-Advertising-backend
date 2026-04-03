@@ -225,6 +225,7 @@ const seed = async () => {
     const [order] = await models.Order.findOrCreate({
       where: { orderNumber: o.orderNumber },
       defaults: {
+        orderNumber: o.orderNumber,
         customerName: o.customerName,
         customerContact: o.customerContact,
         status: o.status,
@@ -259,6 +260,7 @@ const seed = async () => {
   const [job] = await models.ProductionJob.findOrCreate({
     where: { jobNumber: 'JOB-SEED-001' },
     defaults: {
+      jobNumber: 'JOB-SEED-001',
       teamId: team.id,
       status: 'IN_PROGRESS',
       startDate: new Date(),
