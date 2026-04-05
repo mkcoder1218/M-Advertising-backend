@@ -9,3 +9,13 @@ export const overview = async (_req: Request, res: Response, next: NextFunction)
     next(err);
   }
 };
+
+export const roleAnalytics = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = (req as any).user;
+    const data = await analyticsService.getRoleAnalytics(user);
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
+};

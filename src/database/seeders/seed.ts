@@ -17,6 +17,7 @@ const seed = async () => {
     { name: 'SALES', description: 'Customer orders and POS interface.' },
     { name: 'TENDER', description: 'Contract management and bidding.' },
     { name: 'ORDER_RECEPTION', description: 'Initial order intake and processing.' },
+    { name: 'DESIGNER', description: 'Design preparation and file readiness.' },
     { name: 'PRODUCTION_TEAM', description: 'Task-focused workflow for shop floor.' },
   ];
 
@@ -75,9 +76,11 @@ const seed = async () => {
   await roleRows.SALES.setPermissions(pick(['sales.read', 'sales.write', 'orders.read']));
   await roleRows.TENDER.setPermissions(pick(['tender.read', 'tender.write']));
   await roleRows.ORDER_RECEPTION.setPermissions(pick(['orders.read', 'orders.write']));
+  await roleRows.DESIGNER.setPermissions(pick(['orders.read', 'orders.write']));
   await roleRows.PRODUCTION_TEAM.setPermissions(pick(['production.read', 'production.write']));
 
   const workTypes = [
+    { name: 'DESIGNER', description: 'Design and artwork preparation' },
     { name: 'WELDING', description: 'Welding and metal joining' },
     { name: 'CNC', description: 'CNC machining and cutting' },
     { name: 'ASSEMBLY', description: 'Assembly line work' },
@@ -103,6 +106,7 @@ const seed = async () => {
     { role: 'SALES', email: 'sales@workshop.local', password: 'Sales@12345', name: 'Sales Executive' },
     { role: 'TENDER', email: 'tender@workshop.local', password: 'Tender@12345', name: 'Tender Officer' },
     { role: 'ORDER_RECEPTION', email: 'orders@workshop.local', password: 'Orders@12345', name: 'Order Reception' },
+    { role: 'DESIGNER', email: 'designer@workshop.local', password: 'Designer@12345', name: 'Designer', workType: 'DESIGNER' },
     { role: 'PRODUCTION_TEAM', email: 'production@workshop.local', password: 'Production@12345', name: 'Production Team', workType: 'WELDING' },
   ];
 

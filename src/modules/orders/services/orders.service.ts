@@ -54,7 +54,16 @@ export const updateOrder = async (id: string, data: any) => {
   if (!order) return null;
   const prevStatus = order.approvalStatus;
   const nextStatus = data.approvalStatus || prevStatus;
-  const updated = await order.update(data);
+  const timestamps: any = {};
+  const now = new Date();
+  if (prevStatus !== nextStatus) {
+    if (nextStatus === 'SENT_TO_DESIGNER' && !(order as any).sentToDesignerAt) timestamps.sentToDesignerAt = now;
+    if (nextStatus === 'SENT_TO_WORKER' && !(order as any).sentToWorkerAt) timestamps.sentToWorkerAt = now;
+    if (nextStatus === 'WORKER_ACCEPTED' && !(order as any).workerAcceptedAt) timestamps.workerAcceptedAt = now;
+    if (nextStatus === 'WORK_IN_PROGRESS' && !(order as any).workStartedAt) timestamps.workStartedAt = now;
+    if (nextStatus === 'WORK_COMPLETED' && !(order as any).workCompletedAt) timestamps.workCompletedAt = now;
+  }
+  const updated = await order.update({ ...data, ...timestamps });
 
   if (prevStatus !== 'WORK_IN_PROGRESS' && prevStatus !== 'WORK_COMPLETED' && nextStatus === 'WORK_IN_PROGRESS') {
     const items = await OrderItem.findAll({ where: { orderId: order.id } });
@@ -79,4 +88,52 @@ export const updateOrder = async (id: string, data: any) => {
 
 export const addMessage = async (orderId: string, data: any) => {
   return OrderMessage.create({ ...data, orderId });
+};
+
+export const setOrderFile = async (id: string, url: string) => {
+  const order = await Order.findByPk(id);
+  if (!order) return null;
+  return order.update({ orderFileUrl: url, fileAvailable: true });
+};
+
+export const setDesignFile = async (id: string, url: string) => {
+  const order = await Order.findByPk(id);
+  if (!order) return null;
+  return order.update({ designFileUrl: url, fileAvailable: true });
+};
+
+export const replaceOrderItems = async (orderId: string, items: any[]) => {
+  const existing = await OrderItem.findAll({ where: { orderId } });
+  const existingMap: Record<string, any> = {};
+  for (const it of existing as any[]) {
+    existingMap[`${it.productId}`] = it;
+  }
+
+  const incomingProductIds = new Set(items.map((i) => i.productId));
+  // Update or create incoming
+  for (const item of items) {
+    const found = existingMap[item.productId];
+    if (found) {
+      await found.update({
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        workTypeId: item.workTypeId || null,
+      });
+    } else {
+      await OrderItem.create({
+        orderId,
+        productId: item.productId,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        workTypeId: item.workTypeId || null,
+      });
+    }
+  }
+  // Remove items not present anymore
+  for (const it of existing as any[]) {
+    if (!incomingProductIds.has(it.productId)) {
+      await it.destroy();
+    }
+  }
+  return OrderItem.findAll({ where: { orderId } });
 };
