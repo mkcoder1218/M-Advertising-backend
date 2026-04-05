@@ -18,6 +18,7 @@ export const updateUserSchema = Joi.object({
     fullName: Joi.string().max(255).optional(),
     phone: Joi.string().max(50).optional(),
     isActive: Joi.boolean().optional(),
+    roleIds: Joi.array().items(Joi.string().uuid()).optional(),
     attendanceLat: Joi.number().optional(),
     attendanceLng: Joi.number().optional(),
     attendanceRadiusM: Joi.number().integer().min(10).max(1000).optional(),

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as ordersService from '../services/orders.service';
+import { Upload } from '../../uploads/models/upload.model';
 
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -40,6 +41,15 @@ export const listOrderItems = async (req: Request, res: Response, next: NextFunc
   }
 };
 
+export const updateOrderItems = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const items = await ordersService.replaceOrderItems(req.params.id, req.body.items || []);
+    res.json(items);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const updateOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const order = await ordersService.updateOrder(req.params.id, req.body);
@@ -66,6 +76,50 @@ export const addMessage = async (req: Request, res: Response, next: NextFunction
   try {
     const message = await ordersService.addMessage(req.params.id, req.body);
     res.status(201).json(message);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const uploadOrderFile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const file = (req as any).file;
+    if (!file) return res.status(400).json({ message: 'File is required' });
+
+    const upload = await Upload.create({
+      originalName: file.originalname,
+      fileName: file.filename,
+      mimeType: file.mimetype,
+      size: file.size,
+      path: file.path,
+      url: `/uploads/${file.filename}`,
+    });
+
+    const order = await ordersService.setOrderFile(req.params.id, upload.url);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    res.json({ order, upload });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const uploadDesignFile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const file = (req as any).file;
+    if (!file) return res.status(400).json({ message: 'File is required' });
+
+    const upload = await Upload.create({
+      originalName: file.originalname,
+      fileName: file.filename,
+      mimeType: file.mimetype,
+      size: file.size,
+      path: file.path,
+      url: `/uploads/${file.filename}`,
+    });
+
+    const order = await ordersService.setDesignFile(req.params.id, upload.url);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    res.json({ order, upload });
   } catch (err) {
     next(err);
   }

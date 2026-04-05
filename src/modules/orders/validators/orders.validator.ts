@@ -9,6 +9,11 @@ export const createOrderSchema = Joi.object({
     orderDate: Joi.date().required(),
     approvalStatus: Joi.string().max(50).optional(),
     assignedWorker: Joi.string().max(255).optional(),
+    assignedWorkerId: Joi.string().uuid().optional(),
+    assignedDesignerId: Joi.string().uuid().optional(),
+    acceptedById: Joi.string().uuid().optional(),
+    needsDesign: Joi.boolean().optional(),
+    fileAvailable: Joi.boolean().optional(),
     total: Joi.number().precision(2).optional(),
     itemsCount: Joi.number().integer().optional(),
     items: Joi.array().items(
@@ -45,11 +50,29 @@ export const createOrderItemSchema = Joi.object({
   query: Joi.object().optional(),
 });
 
+export const updateOrderItemsSchema = Joi.object({
+  body: Joi.object({
+    items: Joi.array()
+      .items(
+        Joi.object({
+          productId: Joi.string().uuid().required(),
+          quantity: Joi.number().precision(2).required(),
+          unitPrice: Joi.number().precision(2).required(),
+          workTypeId: Joi.string().uuid().optional(),
+        })
+      )
+      .required(),
+  }).required(),
+  params: Joi.object({ id: Joi.string().uuid().required() }).required(),
+  query: Joi.object().optional(),
+});
+
 export const updateOrderSchema = Joi.object({
   body: Joi.object({
     status: Joi.string().max(50).optional(),
     approvalStatus: Joi.string().valid(
       'AWAITING_RECEPTION',
+      'SENT_TO_DESIGNER',
       'SENT_TO_WORKER',
       'WORKER_ACCEPTED',
       'WORK_IN_PROGRESS',
@@ -57,6 +80,11 @@ export const updateOrderSchema = Joi.object({
       'WORKER_REJECTED'
     ).optional(),
     assignedWorker: Joi.string().max(255).optional(),
+    assignedWorkerId: Joi.string().uuid().optional(),
+    assignedDesignerId: Joi.string().uuid().optional(),
+    acceptedById: Joi.string().uuid().optional(),
+    needsDesign: Joi.boolean().optional(),
+    fileAvailable: Joi.boolean().optional(),
     total: Joi.number().precision(2).optional(),
     itemsCount: Joi.number().integer().optional(),
   }).required(),

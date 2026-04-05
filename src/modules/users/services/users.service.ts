@@ -40,12 +40,20 @@ export const updateUser = async (id: string, data: any) => {
   const user = await User.findByPk(id);
   if (!user) return null;
 
+  const roleIds = data.roleIds;
+  if (roleIds) delete data.roleIds;
+
   if (data.password) {
     data.passwordHash = await hashPassword(data.password);
     delete data.password;
   }
 
-  return user.update(data);
+  const updated = await user.update(data);
+  if (roleIds && Array.isArray(roleIds)) {
+    const roles = await Role.findAll({ where: { id: roleIds } });
+    await (updated as any).setRoles(roles);
+  }
+  return updated;
 };
 
 export const deleteUser = async (id: string) => {
